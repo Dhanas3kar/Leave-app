@@ -24,6 +24,15 @@ export default function LeaveRequestForm() {
           </div>
         </div>
         <div className="input-group">
+          <label htmlFor="type">Leave Type</label>
+          <select id="type" name="type" required>
+            <option value="ANNUAL">Annual Leave</option>
+            <option value="SICK">Sick Leave</option>
+            <option value="CASUAL">Casual Leave</option>
+            <option value="MATERNITY">Maternity Leave</option>
+          </select>
+        </div>
+        <div className="input-group">
           <label htmlFor="reason">Reason</label>
           <textarea id="reason" name="reason" required rows={3} placeholder="Why do you need leave?"></textarea>
         </div>

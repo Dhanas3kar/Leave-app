@@ -46,6 +46,7 @@ test.describe('Leave Management Flow', () => {
 
     await page.fill('input[name="startDate"]', today.toISOString().split('T')[0]);
     await page.fill('input[name="endDate"]', tomorrow.toISOString().split('T')[0]);
+    await page.selectOption('select[name="type"]', 'SICK');
     await page.fill('textarea[name="reason"]', 'Feeling sick');
     
     await page.click('button[type="submit"]');
@@ -73,6 +74,7 @@ test.describe('Leave Management Flow', () => {
 
     await page.fill('input[name="startDate"]', today.toISOString().split('T')[0]);
     await page.fill('input[name="endDate"]', twentyDaysLater.toISOString().split('T')[0]);
+    await page.selectOption('select[name="type"]', 'ANNUAL');
     await page.fill('textarea[name="reason"]', 'Long vacation');
     
     await page.click('button[type="submit"]');
@@ -98,6 +100,7 @@ test.describe('Leave Management Flow', () => {
 
     await page.fill('input[name="startDate"]', today.toISOString().split('T')[0]);
     await page.fill('input[name="endDate"]', twentyFiveDaysLater.toISOString().split('T')[0]);
+    await page.selectOption('select[name="type"]', 'ANNUAL');
     await page.fill('textarea[name="reason"]', 'Too long vacation');
     
     await page.click('button[type="submit"]');

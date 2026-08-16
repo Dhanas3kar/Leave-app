@@ -41,8 +41,9 @@ model LeaveRequest {
   user      User     @relation(fields: [userId], references: [id])
   startDate DateTime
   endDate   DateTime
+  type      String   @default("ANNUAL") // "ANNUAL", "SICK", "CASUAL", "MATERNITY"
   reason    String
-  status    String   @default("PENDING") // "PENDING", "APPROVED", "REJECTED"
+  status    String   @default("PENDING") // "PENDING", "APPROVED", "REJECTED", "CANCELLED"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
