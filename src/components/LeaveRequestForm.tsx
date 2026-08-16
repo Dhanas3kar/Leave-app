@@ -1,0 +1,34 @@
+"use client";
+
+import { useActionState } from 'react';
+import { createLeaveRequest } from '@/app/actions/leave';
+
+export default function LeaveRequestForm() {
+  const [state, formAction] = useActionState(createLeaveRequest as any, null as any);
+
+  return (
+    <div className="glass-panel" style={{ marginTop: '2rem' }}>
+      <h3>Request Leave</h3>
+      {state?.error && <div className="error-msg">{state.error}</div>}
+      {state?.success && <div className="error-msg" style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)' }}>Leave request submitted successfully!</div>}
+      
+      <form action={formAction} style={{ marginTop: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <div className="input-group" style={{ flex: 1 }}>
+            <label htmlFor="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate" required />
+          </div>
+          <div className="input-group" style={{ flex: 1 }}>
+            <label htmlFor="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate" required />
+          </div>
+        </div>
+        <div className="input-group">
+          <label htmlFor="reason">Reason</label>
+          <textarea id="reason" name="reason" required rows={3} placeholder="Why do you need leave?"></textarea>
+        </div>
+        <button type="submit" className="btn-primary">Submit Request</button>
+      </form>
+    </div>
+  );
+}
