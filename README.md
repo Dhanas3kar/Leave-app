@@ -5,13 +5,13 @@
   [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io)
   [![Playwright](https://img.shields.io/badge/Playwright-Tested-2EAD33?style=for-the-badge&logo=playwright)](https://playwright.dev)
-  [![Render](https://img.shields.io/badge/Render-Deployable-black?style=for-the-badge&logo=render)](https://render.com)
+  [![Vercel](https://img.shields.io/badge/Vercel-Deployable-black?style=for-the-badge&logo=vercel)](https://vercel.com)
 </div>
 
 ---
 
 ## 🚀 Overview
-LeaveSync is a fully-fledged, end-to-end prototype designed to manage employee leave requests seamlessly. Moving beyond hard-coded state, this application leverages a real **SQLite database**, robust **Server Actions**, and **stateless JWT authentication** to provide a human-crafted, premium-feeling internal tooling experience.
+LeaveSync is a fully-fledged, end-to-end prototype designed to manage employee leave requests seamlessly. Moving beyond hard-coded state, this application leverages a real **SQLite database** (which can be easily swapped to PostgreSQL for edge deployments), robust **Server Actions**, and **stateless JWT authentication** to provide a human-crafted, premium-feeling internal tooling experience.
 
 It was engineered with production-level principles, avoiding AI-generated boilerplate in favor of strict, resilient, manual code design.
 
@@ -74,12 +74,22 @@ npx playwright test
 
 ---
 
-## ☁️ Zero-Config Deployment
+## ☁️ Zero-Cost Cloud Deployment (Vercel + Neon)
 
-Deploying this app is completely automated. We have provided a `render.yaml` Blueprint file to bypass the ephemeral filesystem limitations of standard serverless hosts. 
+Since SQLite is a local file-based database, it does not persist on serverless edge networks like Vercel. 
+To deploy this application **completely for free** (with absolutely no credit card required), follow these steps:
 
-**Deploy to Render.com:**
-1. Log in to [Render](https://render.com) and click **New + -> Blueprint**.
-2. Connect your GitHub repository.
-3. Render will instantly provision the Node server, run Prisma migrations, and attach a 1GB persistent disk at `/data` to store the SQLite database.
+1. **Create a Free Cloud Database:**
+   Sign in to [Neon.tech](https://neon.tech) (or Supabase) using your GitHub account. Create a new free project. It will instantly generate a PostgreSQL connection string (`postgresql://...`).
+
+2. **Update Prisma to PostgreSQL:**
+   In your codebase, open `prisma/schema.prisma` and change `provider = "sqlite"` to `provider = "postgresql"`. Commit and push this change to your repository.
+
+3. **Deploy to Vercel:**
+   Sign in to [Vercel](https://vercel.com) using GitHub. Import this repository.
+   In the **Environment Variables** section before clicking deploy, add:
+   - `DATABASE_URL`: Your Neon Postgres connection string.
+   - `JWT_SECRET`: Any long, secure random string.
+
+Click **Deploy**! Vercel will automatically run the Prisma migrations (`npx prisma db push`) and launch your application on a lightning-fast, free, global edge network.
 
