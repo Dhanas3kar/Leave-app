@@ -93,3 +93,27 @@ To deploy this application **completely for free** (with absolutely no credit ca
 
 Click **Deploy**! Vercel will automatically run the Prisma migrations (`npx prisma db push`) and launch your application on a lightning-fast, free, global edge network.
 
+
+
+---
+
+## 🚀 Roadmap to Production (Post-MVP)
+
+> **Note:** LeaveSync is currently a **Minimum Viable Product (MVP) / Rapid Prototype**. It was engineered to showcase high-end design, robust database architecture, and Server Action security in a condensed timeframe.
+
+To transition this codebase into a fully compliant, production-grade enterprise application, the following roadmap should be executed:
+
+### Phase 1: Security & Compliance
+- **Auth Provider Integration:** Replace local JWT password auth with a managed provider (e.g., NextAuth.js/Auth.js with Google Workspace, Okta, or Azure AD) for SSO and MFA.
+- **Data Encryption:** Ensure database at-rest encryption and encrypt sensitive PII fields.
+- **Audit Logging:** Create a dedicated \AuditLog\ table to track every status change (e.g., *'Manager X approved Leave Y at Timestamp'*).
+
+### Phase 2: Advanced Business Logic
+- **Holiday & Weekend Filtering:** Integrate a calendar API to automatically discount weekends and national holidays from leave day calculations.
+- **Multi-Tier Approvals:** Support complex organizational charts where a request must pass through a direct Lead before reaching HR.
+- **Accrual Engine:** Replace static leave quotas with a chron-job powered accrual system (e.g., earning 1.5 days per month worked).
+
+### Phase 3: Infrastructure & Scalability
+- **Database Migration:** Swap SQLite for a highly available PostgreSQL cluster (e.g., Neon, Supabase, or AWS RDS).
+- **Email Notifications:** Integrate Resend or SendGrid to email users automatically when their leave is approved, rejected, or pending for too long.
+- **Observability:** Integrate Sentry for error tracking and Datadog/Vercel Analytics for performance monitoring.
