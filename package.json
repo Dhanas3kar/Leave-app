@@ -12,6 +12,7 @@
     "db:push": "npm run db:push --workspace=@leave-app/database"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "concurrently": "^10.0.5"
   }
 }
