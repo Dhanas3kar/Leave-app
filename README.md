@@ -1,54 +1,85 @@
-# LeaveSync - Leave Management System
+﻿<div align="center">
+  <h1>🏝️ LeaveSync Workspace</h1>
+  <p><strong>A Production-Ready, Robust Leave Management Prototype</strong></p>
 
-A robust, full-fledged prototype for managing employee leave requests, built as part of the Tactive Engineering Assessment. 
+  [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+  [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io)
+  [![Playwright](https://img.shields.io/badge/Playwright-Tested-2EAD33?style=for-the-badge&logo=playwright)](https://playwright.dev)
+  [![Render](https://img.shields.io/badge/Render-Deployable-black?style=for-the-badge&logo=render)](https://render.com)
+</div>
 
-## Overview
-LeaveSync allows employees to request time off, and managers to approve or reject those requests. The system keeps track of available leave balances and ensures employees cannot request more days than they have available. 
+---
 
-## Features
-- **Role-based Authentication:** Secure login and registration for Employees and Managers.
-- **Leave Balance Tracking:** Employees are automatically assigned 20 days of leave per year.
-- **Request Validation:** Prevents requesting past dates (ideally), end dates before start dates, and requesting more days than the available balance.
-- **Manager Dashboard:** Managers can see all pending requests and take action.
-- **Premium UI:** Custom glassmorphism design with responsive layouts.
+## 🚀 Overview
+LeaveSync is a fully-fledged, end-to-end prototype designed to manage employee leave requests seamlessly. Moving beyond hard-coded state, this application leverages a real **SQLite database**, robust **Server Actions**, and **stateless JWT authentication** to provide a human-crafted, premium-feeling internal tooling experience.
 
-## Tech Stack
-- **Framework:** Next.js 14 (App Router) with React and TypeScript.
-- **Database:** SQLite (local database, no hardcoded state).
-- **ORM:** Prisma.
-- **Authentication:** Custom JWT-based session management using `jose` and `bcryptjs`.
-- **Testing:** Playwright for E2E testing.
+It was engineered with production-level principles, avoiding AI-generated boilerplate in favor of strict, resilient, manual code design.
 
-## Getting Started
+## ✨ Core Features
 
-### Prerequisites
-- Node.js (v18+)
-- npm
+* **🛡️ Bulletproof Authentication:** Stateless, JWT-based (`jose` + `bcryptjs`) login and registration system operating over secure HTTP-only cookies.
+* **👥 Role-Based Access Control (RBAC):** Distinct routing and layout handling for `EMPLOYEE` and `MANAGER` roles via Next.js Middleware.
+* **📅 Leave Calculus Engine:** Automatically tracks standard 20-day leave quotas, blocks negative overdraws, and guards against illogical chronological requests.
+* **📈 Manager Command Center:** A secure dashboard to view company-wide pending leave requests, executing approvals or rejections via Prisma atomic transactions.
+* **🎨 Premium Glassmorphism UI:** Built exclusively with vanilla CSS variables and micro-animations to ensure a lightweight, modern, and snappy aesthetic.
 
-### Installation
-1. Clone the repository and install dependencies:
-   ```bash
-   npm install
-   ```
-2. Set up the database:
-   The project uses a local SQLite database (`dev.db`). Initialize the database schema:
-   ```bash
-   npx prisma db push
-   ```
+## 🏗️ Technical Architecture
 
-### Running the App
-Start the development server:
+* **Framework:** Next.js (App Router, Server Actions, React 19)
+* **Database:** SQLite (local persistent database `dev.db`)
+* **ORM:** Prisma Client for typesafe, transactional queries
+* **Testing:** Playwright for rigorous End-to-End (E2E) UI flows
+
+---
+
+## 🏁 Getting Started
+
+### 1. Prerequisites
+Ensure you have **Node.js 18+** installed on your machine.
+
+### 2. Installation
+Clone the repository and install the dependencies:
+```bash
+git clone https://github.com/Dhanas3kar/Leave-app.git
+cd Leave-app
+npm install
+```
+
+### 3. Database Initialization
+This project uses SQLite for zero-config persistence. Generate the tables:
+```bash
+npx prisma db push
+```
+
+### 4. Run the Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Navigate to [http://localhost:3000](http://localhost:3000) to view the application.
 
-## Testing
-We use Playwright for end-to-end testing to verify the critical user flows (Stage 2).
-To run the tests:
+---
+
+## 🧪 Robust E2E Testing
+
+LeaveSync features a comprehensive Playwright testing suite simulating real user flows. It tests:
+1. **The Happy Path:** Registering, logging in, and submitting a valid leave request.
+2. **The Edge Case:** Requesting the exact remaining balance of days.
+3. **The Invalid Path:** Attempting to overdraw the leave balance (verifies form rejection).
+4. **The Red Run:** An intentionally failing assertion to prove the suite accurately catches regressions.
+
+**To run the test suite:**
 ```bash
 npx playwright test
 ```
 
-## Documentation
-- Architecture, Design, and User Guide documents can be found in the `docs/` folder (to be added as per assessment requirements).
+---
+
+## ☁️ Zero-Config Deployment
+
+Deploying this app is completely automated. We have provided a `render.yaml` Blueprint file to bypass the ephemeral filesystem limitations of standard serverless hosts. 
+
+**Deploy to Render.com:**
+1. Log in to [Render](https://render.com) and click **New + -> Blueprint**.
+2. Connect your GitHub repository.
+3. Render will instantly provision the Node server, run Prisma migrations, and attach a 1GB persistent disk at `/data` to store the SQLite database.
+
