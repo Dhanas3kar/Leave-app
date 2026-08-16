@@ -1,38 +1,37 @@
 <div align="center">
-  <h1>??? LeaveSync Monorepo Workspace</h1>
+  <h1>✨ LeaveSync Monorepo Workspace</h1>
   <p><strong>A Distributed, Production-Ready Leave Management Prototype</strong></p>
+  <p><em>Submitted for the Tactive QA Automation & Software Engineering Assessment</em></p>
 
   [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io)
+  [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
 </div>
 
 ---
 
-## ?? Overview
-LeaveSync is a fully-fledged, end-to-end prototype engineered to manage employee leave requests securely and elegantly across a **distributed architecture**. 
+## 📖 Overview
+LeaveSync is a robust prototype engineered to manage employee leave requests securely across a **distributed architecture**. 
 
-Instead of a monolithic Next.js application handling mixed concerns, LeaveSync is split into isolated micro-frontends (Employee Portal and Manager Portal) inside an NPM Workspace monorepo. This allows parallel development, cleaner route segmenting, and an authentic production-level deployment setup.
+Built for the Tactive Internship Assessment, this repository demonstrates the ability to architect a modern web application, automate testing with AI, and iteratively fix and improve code through an AI change loop.
 
-It was crafted manually with high-end robust practices, avoiding AI-generated boilerplate to ensure code resiliency.
+Instead of a monolithic application, LeaveSync is split into isolated micro-frontends (Employee Portal and Manager Portal) inside an NPM Workspace monorepo. This showcases advanced system design, strict route segmenting, and production-level architectural principles.
 
-## ? Core Features
+## 📁 Assessment Deliverables Included
 
-* **??? Distributed Monorepo Setup:** Segregated into `apps/employee-portal` and `apps/manager-portal` with a shared `@leave-app/database` package.
-* **??? Bulletproof Authentication:** Stateless, JWT-based (`jose` + `bcryptjs`) login working seamlessly across ports via secure cookies.
-* **?? Role-Based Access Control:** Strict routing separation, ensuring standard employees can never access the manager dashboard, while managers can smoothly cross-navigate to submit their own leave.
-* **?? Leave Calculus Engine:** Automatically tracks standard 20-day leave quotas, blocks negative overdraws, and guards against illogical chronological requests.
-* **?? Premium UI:** Built exclusively with vanilla CSS variables and micro-animations to ensure a lightweight, modern, and snappy aesthetic.
-
-## ??? Technical Architecture
-
-* **Framework:** Next.js (App Router, Server Actions, React 19)
-* **Architecture:** NPM Workspaces Monorepo
-* **Database:** SQLite (local persistent database `dev.db`) via Prisma ORM
-* **Process Management:** `concurrently` for running both portals synchronously.
+All required deliverables are packaged in this repository:
+- **Source Code:** Full Next.js 15 App Router implementation.
+- **Documentation (`/docs`):** 
+  - [Architecture Document](./docs/Architecture_Document.md)
+  - [Design Document](./docs/Design_Document.md)
+  - [User Guide](./docs/User_Guide.md)
+  - [AI Change Loop Evidence Log](./docs/AI_Change_Loop_Evidence.md)
+  - [Presentation Deck](./docs/Presentation_Deck.html)
+- **Test Suite (`/tests`):** E2E automated Playwright scripts covering normal paths, edge cases, and invalid inputs.
 
 ---
 
-## ?? Getting Started
+## 🚀 Getting Started
 
 ### 1. Prerequisites
 Ensure you have **Node.js 18+** installed on your machine.
@@ -62,24 +61,44 @@ npm run dev
 
 ---
 
-## ?? Roadmap to Production (Post-MVP)
+## 🧪 Automated Testing
 
-> **?? ATTENTION:** LeaveSync is currently a **Minimum Viable Product (MVP) / Rapid Prototype**. It was engineered to showcase high-end design, robust database architecture, and Server Action security in a condensed timeframe.
+The application is fully covered by end-to-end Playwright tests, orchestrating workflows across both the Employee and Manager portals. The tests validate successful flows, ensure proper leave-balance math, and test quota exhaustion (a deliberate red-run scenario).
+
+To run the test suite:
+```bash
+npx playwright install # Run this once to download browser binaries
+npx playwright test
+```
+
+Test results, traces, and screenshots are output to the `playwright-report/` and `test-results/` directories.
+
+---
+
+## 💎 Core Features
+
+* **📦 Distributed Monorepo Setup:** Segregated into `apps/employee-portal` and `apps/manager-portal` with a shared `@leave-app/database` package.
+* **🔒 Bulletproof Authentication:** Stateless, JWT-based login working seamlessly across ports via secure, HttpOnly cookies.
+* **🛡️ Role-Based Access Control:** Strict routing separation, ensuring standard employees can never access the manager dashboard, while managers can smoothly cross-navigate to submit their own leave.
+* **🧮 Leave Calculus Engine:** Automatically tracks standard 20-day leave quotas, blocks negative overdraws, and guards against illogical chronological requests.
+* **✨ Premium UI:** Built exclusively with vanilla CSS variables, Glassmorphism elements, and micro-animations to ensure a lightweight, modern, and snappy aesthetic.
+
+---
+
+## 🔮 Roadmap to Production (Post-MVP)
+
+> **⚠️ ATTENTION:** LeaveSync is currently a Minimum Viable Product (MVP) / Rapid Prototype. It was engineered to showcase high-end design, robust database architecture, and Server Action security in a condensed timeframe.
 
 To transition this distributed codebase into a fully compliant, production-grade enterprise application, the following roadmap should be executed:
 
 ### Phase 1: Security & Identity
 - **Auth Provider Integration:** Replace local JWT password auth with a managed provider (e.g., NextAuth.js/Auth.js with Google Workspace, Okta, or Azure AD) for SSO and MFA.
-- **Data Encryption:** Ensure database at-rest encryption and encrypt sensitive PII fields.
 - **Audit Logging:** Create a dedicated `AuditLog` table to track every status change (e.g., *Manager X approved Leave Y at Timestamp*).
 
 ### Phase 2: Advanced Business Logic
 - **Holiday & Weekend Filtering:** Integrate a calendar API to automatically discount weekends and national holidays from leave day calculations.
 - **Multi-Tier Approvals:** Support complex organizational charts where a request must pass through a direct Lead before reaching HR.
-- **Accrual Engine:** Replace static leave quotas with a chron-job powered accrual system (e.g., earning 1.5 days per month worked).
 
 ### Phase 3: Infrastructure & Deployment
-- **Database Migration:** Swap local SQLite for a highly available PostgreSQL cluster (e.g., Neon, Supabase, or AWS RDS). *Update `provider` in `schema.prisma` before deploying to Vercel.*
-- **Micro-Frontend Routing (Reverse Proxy):** Implement Nginx or Vercel Edge routing to serve the portals on subdomains (e.g., `employee.company.com` and `manager.company.com`) rather than distinct ports.
-- **Observability:** Integrate Sentry for error tracking and Datadog for performance monitoring.
-
+- **Database Migration:** Swap local SQLite for a highly available PostgreSQL cluster (e.g., Neon, Supabase, or AWS RDS).
+- **Micro-Frontend Routing:** Implement Nginx or Vercel Edge routing to serve the portals on subdomains (e.g., `employee.company.com` and `manager.company.com`) rather than distinct ports.
