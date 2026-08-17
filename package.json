@@ -9,6 +9,9 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w employee-portal\" \"npm run dev -w manager-portal\"",
     "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
     "db:push": "npm run db:push --workspace=@leave-app/database"
   },
   "devDependencies": {

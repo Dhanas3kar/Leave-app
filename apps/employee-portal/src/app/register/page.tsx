@@ -1,10 +1,11 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { register } from "@/app/actions/auth";
+import { register } from "@leave-app/database/src/actions/auth";
 import Link from "next/link";
 
 export default function RegisterPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [state, formAction] = useActionState(register as any, null as any);
 
   useEffect(() => {

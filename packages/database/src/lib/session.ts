@@ -1,27 +1,9 @@
-import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { encrypt, decrypt, SessionPayload } from './session-crypto';
 
-const secretKey = process.env.SESSION_SECRET || 'super-secret-key-for-prototype';
-const key = new TextEncoder().encode(secretKey);
-
-export async function encrypt(payload: any) {
-  return await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(key);
-}
-
-export async function decrypt(input: string): Promise<any> {
-  const { payload } = await jwtVerify(input, key, {
-    algorithms: ['HS256'],
-  });
-  return payload;
-}
-
-export async function setSession(user: { id: string; role: string; name: string }) {
+export async function setSession(user: SessionPayload) {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const session = await encrypt({ user, expires });
+  const session = await encrypt(user, expires);
 
   const cookieStore = await cookies();
   if (!cookieStore) return;
@@ -34,15 +16,17 @@ export async function setSession(user: { id: string; role: string; name: string 
   });
 }
 
-export async function getSession() {
+export async function getCurrentUser(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
   if (!cookieStore) return null;
   const session = cookieStore.get('session')?.value;
   if (!session) return null;
   try {
     const parsed = await decrypt(session);
-    return parsed.user as { id: string; role: string; name: string };
+    return parsed.user;
   } catch (error) {
+    // If token is invalid or expired, clear it proactively
+    await clearSession();
     return null;
   }
 }

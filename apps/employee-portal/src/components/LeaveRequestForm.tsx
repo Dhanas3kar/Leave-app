@@ -1,9 +1,20 @@
 "use client";
 
 import { useActionState } from 'react';
-import { createLeaveRequest } from '@/app/actions/leave';
+import { createLeaveRequest } from '@leave-app/database/src/actions/leave';
+import { useFormStatus } from 'react-dom';
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn-primary" disabled={pending}>
+      {pending ? 'Submitting...' : 'Submit Request'}
+    </button>
+  );
+}
 
 export default function LeaveRequestForm() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [state, formAction] = useActionState(createLeaveRequest as any, null as any);
 
   return (
@@ -36,7 +47,7 @@ export default function LeaveRequestForm() {
           <label htmlFor="reason">Reason</label>
           <textarea id="reason" name="reason" required rows={3} placeholder="Why do you need leave?"></textarea>
         </div>
-        <button type="submit" className="btn-primary">Submit Request</button>
+        <SubmitButton />
       </form>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from 'react';
-import { approveLeaveRequest, rejectLeaveRequest } from '@/app/actions/leave';
+import { approveLeaveRequest, rejectLeaveRequest } from '@leave-app/database/src/actions/leave';
 
 export default function ManagerActions({ requestId }: { requestId: string }) {
   const [isPending, startTransition] = useTransition();

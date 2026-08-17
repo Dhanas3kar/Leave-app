@@ -1,14 +1,18 @@
-import { getSession } from '@/lib/session';
+import { getCurrentUser } from '@leave-app/database/src/lib/session';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import LogoutButton from '@/components/LogoutButton';
 import ManagerActions from '@/components/ManagerActions';
-import { getLeaveStats } from '@/app/actions/leave';
+import { getLeaveStats } from '@leave-app/database/src/actions/leave';
 
 export default async function ManagerDashboard() {
-  const session = await getSession();
-  if (!session || session.role !== 'MANAGER') {
+  const session = await getCurrentUser();
+  if (!session) {
     redirect('/login');
+  }
+
+  if (session.role !== 'MANAGER') {
+    redirect('http://localhost:3000/employee');
   }
 
   const stats = await getLeaveStats();
@@ -69,7 +73,7 @@ export default async function ManagerDashboard() {
           <p style={{ color: 'var(--text-muted)' }}>All caught up! No pending requests.</p>
         ) : (
           <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-            {pendingRequests.map((req: any) => (
+            {pendingRequests.map((req) => (
               <div key={req.id} style={{ padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
                 <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
                   <div>
@@ -87,7 +91,7 @@ export default async function ManagerDashboard() {
                 </div>
 
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                  "{req.reason}"
+                  &quot;{req.reason}&quot;
                 </div>
 
                 <ManagerActions requestId={req.id} />

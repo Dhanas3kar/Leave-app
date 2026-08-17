@@ -1,21 +1,36 @@
 "use server";
 
-import { prisma } from '@/lib/prisma';
-import { setSession, clearSession } from '@/lib/session';
+import { prisma } from '../../index';
+import { setSession, clearSession } from '../lib/session';
 import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
+
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(2),
+  role: z.enum(['EMPLOYEE', 'MANAGER']),
+});
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
 
 export async function register(prevState: any, formData: FormData) {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  const name = formData.get('name') as string;
-  const role = formData.get('role') as string;
+  const result = registerSchema.safeParse(Object.fromEntries(formData));
 
-  if (!email || !password || !name || !role) {
-    return { error: 'All fields are required.' };
+  if (!result.success) {
+    return { error: 'Invalid input. Please check your details.' };
   }
 
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  const { email, password, name, role } = result.data;
+
+  const existingUser = await prisma.user.findUnique({ 
+    where: { email },
+    select: { id: true }
+  });
   if (existingUser) {
     return { error: 'Email already exists.' };
   }
@@ -43,22 +58,26 @@ export async function register(prevState: any, formData: FormData) {
 
   await setSession({ id: user.id, role: user.role, name: user.name });
   
-  if (false) {
+  if (user.role === 'MANAGER') {
     return { redirectUrl: 'http://localhost:3001/manager' };
   } else {
-    return { redirectUrl: '/employee' };
+    return { redirectUrl: 'http://localhost:3000/employee' };
   }
 }
 
 export async function login(prevState: any, formData: FormData) {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
+  const result = loginSchema.safeParse(Object.fromEntries(formData));
 
-  if (!email || !password) {
-    return { error: 'Email and password are required.' };
+  if (!result.success) {
+    return { error: 'Invalid email or password format.' };
   }
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const { email, password } = result.data;
+
+  const user = await prisma.user.findUnique({ 
+    where: { email },
+    select: { id: true, password: true, role: true, name: true }
+  });
   if (!user) {
     return { error: 'Invalid email or password.' };
   }
@@ -70,10 +89,10 @@ export async function login(prevState: any, formData: FormData) {
 
   await setSession({ id: user.id, role: user.role, name: user.name });
   
-  if (false) {
+  if (user.role === 'MANAGER') {
     return { redirectUrl: 'http://localhost:3001/manager' };
   } else {
-    return { redirectUrl: '/employee' };
+    return { redirectUrl: 'http://localhost:3000/employee' };
   }
 }
 

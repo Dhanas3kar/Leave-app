@@ -1,10 +1,11 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { login } from "@/app/actions/auth";
+import { login } from "@leave-app/database/src/actions/auth";
 import Link from "next/link";
 
 export default function LoginPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [state, formAction] = useActionState(login as any, null as any);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function LoginPage() {
         </form>
 
         <div className="auth-switch">
-          Don"t have an account? <Link href="/register">Sign up</Link>
+          Don&apos;t have an account? <Link href="/register">Sign up</Link>
         </div>
       </div>
     </div>

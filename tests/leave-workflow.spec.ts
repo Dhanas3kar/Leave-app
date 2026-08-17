@@ -98,4 +98,46 @@ test.describe('Leave Management Workflow', () => {
     // We check for actual text that exists
     await expect(page.locator('h1')).toHaveText('Welcome Back');
   });
+
+  test('Overlapping Rules: Reject overlapping leave requests', async ({ page }) => {
+    const overlapCreds = {
+      name: `Overlap ${randomId}`,
+      email: `overlap_${randomId}@company.com`,
+      password: 'password123',
+    };
+
+    await page.goto(`${EMPLOYEE_PORTAL}/register`);
+    await page.fill('input[name="name"]', overlapCreds.name);
+    await page.fill('input[name="email"]', overlapCreds.email);
+    await page.fill('input[name="password"]', overlapCreds.password);
+    await page.selectOption('select[name="role"]', 'EMPLOYEE');
+    await page.click('button[type="submit"]');
+    
+    await page.waitForURL(/.*\/employee|.*\/login/);
+
+    if (page.url().includes('login')) {
+      await page.fill('input[name="email"]', overlapCreds.email);
+      await page.fill('input[name="password"]', overlapCreds.password);
+      await page.click('button[type="submit"]');
+      await page.waitForURL(/.*\/employee/);
+    }
+
+    // Submit first leave request
+    await page.fill('input[name="startDate"]', '2027-04-01');
+    await page.fill('input[name="endDate"]', '2027-04-05');
+    await page.fill('textarea[name="reason"]', 'Trip 1');
+    await page.click('button:has-text("Submit Request")');
+
+    await page.waitForTimeout(1000);
+    await expect(page.locator('text=Leave request submitted successfully!')).toBeVisible();
+
+    // Submit overlapping leave request
+    await page.fill('input[name="startDate"]', '2027-04-03');
+    await page.fill('input[name="endDate"]', '2027-04-08');
+    await page.fill('textarea[name="reason"]', 'Trip 2');
+    await page.click('button:has-text("Submit Request")');
+
+    await page.waitForTimeout(1000);
+    await expect(page.locator('text=You already have a leave request during this period.')).toBeVisible();
+  });
 });

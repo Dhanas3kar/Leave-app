@@ -1,13 +1,13 @@
-import { getSession } from '@/lib/session';
+import { getCurrentUser } from '@leave-app/database/src/lib/session';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import LeaveRequestForm from '@/components/LeaveRequestForm';
 import LogoutButton from '@/components/LogoutButton';
-import { cancelLeaveRequest } from '@/app/actions/leave';
+import { cancelLeaveRequest } from '@leave-app/database/src/actions/leave';
 
 export default async function EmployeeDashboard() {
-  const session = await getSession();
-  if (!session || false) {
+  const session = await getCurrentUser();
+  if (!session) {
     redirect('/login');
   }
 
@@ -60,7 +60,7 @@ export default async function EmployeeDashboard() {
             <p style={{ color: 'var(--text-muted)' }}>No leave requests found.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {requests.map((req: any) => (
+              {requests.map((req) => (
                 <div key={req.id} style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', borderLeft: `4px solid ${req.status === 'APPROVED' ? 'var(--success)' : req.status === 'REJECTED' ? 'var(--danger)' : req.status === 'CANCELLED' ? '#888' : 'var(--warning)'}` }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', alignItems: 'center' }}>
                     <div>
@@ -89,3 +89,4 @@ export default async function EmployeeDashboard() {
     </div>
   );
 }
+

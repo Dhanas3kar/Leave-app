@@ -28,7 +28,7 @@ model User {
 model LeaveBalance {
   id        String   @id @default(uuid())
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   totalDays Int      @default(20) // Default 20 days per year
   usedDays  Int      @default(0)
   createdAt DateTime @default(now())
@@ -38,7 +38,7 @@ model LeaveBalance {
 model LeaveRequest {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   startDate DateTime
   endDate   DateTime
   type      String   @default("ANNUAL") // "ANNUAL", "SICK", "CASUAL", "MATERNITY"
