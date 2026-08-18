@@ -4,14 +4,19 @@ const EMPLOYEE_URL = process.env.NEXT_PUBLIC_EMPLOYEE_PORTAL_URL || 'http://loca
 
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  timeout: 60000,
+  expect: {
+    timeout: 10000,
+  },
   use: {
     baseURL: EMPLOYEE_URL,
     trace: 'on-first-retry',
+    actionTimeout: 15000,
   },
   projects: [
     {

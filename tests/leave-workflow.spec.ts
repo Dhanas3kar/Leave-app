@@ -18,7 +18,7 @@ const managerCreds = {
   password: 'password123',
 };
 
-test.describe('Leave Management Workflow', () => {
+test.describe.serial('Leave Management Workflow', () => {
   test('Normal Path: Register, Login, Request Leave, Approve Leave', async ({ page, context }) => {
     // 1. Employee registers
     await page.goto(`${EMPLOYEE_PORTAL}/register`);
@@ -248,10 +248,7 @@ test.describe('Leave Management Workflow', () => {
     });
 
     // Logout if logged in (employee portal)
-    await page.goto(`${EMPLOYEE_PORTAL}/employee`);
-    if (await page.locator('button:has-text("Logout")').isVisible()) {
-      await page.click('button:has-text("Logout")');
-    }
+    await page.context().clearCookies();
 
     // Now log in to Manager portal
     await page.goto(`${MANAGER_PORTAL}/login`);

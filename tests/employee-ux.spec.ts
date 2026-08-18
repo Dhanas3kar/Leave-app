@@ -7,7 +7,7 @@ const testSuffix = Date.now().toString();
 const empEmail = `emp-ux-${testSuffix}@test.com`;
 const password = 'password123';
 
-test.describe('Employee Portal UX (Stage 7)', () => {
+test.describe.serial('Employee Portal UX (Stage 7)', () => {
   let employeeId: string;
 
   test.beforeAll(async () => {
@@ -74,9 +74,15 @@ test.describe('Employee Portal UX (Stage 7)', () => {
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
     // Select start date
-    await page.fill('input[name="startDate"]', todayStr);
+    await page.locator('input[name="startDate"]').fill(todayStr);
+    await page.locator('input[name="startDate"]').evaluate((node: HTMLInputElement) => {
+      node.dispatchEvent(new Event('change', { bubbles: true }));
+    });
     // Select end date
-    await page.fill('input[name="endDate"]', tomorrowStr);
+    await page.locator('input[name="endDate"]').fill(tomorrowStr);
+    await page.locator('input[name="endDate"]').evaluate((node: HTMLInputElement) => {
+      node.dispatchEvent(new Event('change', { bubbles: true }));
+    });
 
     // Should show "Duration: 2 days" dynamically
     await expect(page.locator('.duration-preview')).toBeVisible();
@@ -144,16 +150,23 @@ test.describe('Employee Portal UX (Stage 7)', () => {
   });
 
   test('Responsive Dashboard - Layout adapts', async ({ page }) => {
+    // Login
+    await page.goto('http://localhost:3000/login');
+    await page.fill('input[name="email"]', empEmail);
+    await page.fill('input[name="password"]', password);
+    await page.click('button[type="submit"]');
+    await page.waitForURL('http://localhost:3000/employee');
+
     // Start wide
     await page.setViewportSize({ width: 1200, height: 800 });
-    const gridWide = page.locator('.dashboard-grid');
+    const gridWide = page.locator('.dashboard-grid').first();
     const wideBox = await gridWide.boundingBox();
     expect(wideBox).not.toBeNull();
     // In wide mode it's 1fr 2fr, so > 800px width typically
     
     // Switch to narrow mobile view
     await page.setViewportSize({ width: 375, height: 812 });
-    const gridNarrow = page.locator('.dashboard-grid');
+    const gridNarrow = page.locator('.dashboard-grid').first();
     const narrowBox = await gridNarrow.boundingBox();
     expect(narrowBox?.width).toBeLessThan(400);
 
