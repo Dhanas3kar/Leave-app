@@ -42,6 +42,15 @@ describe('Leave Actions Authorization', () => {
       const result = await leaveActions.cancelLeaveRequest('req-1');
       expect(result).toEqual({ error: 'You do not have permission to perform this action.' });
     });
+
+    it('denies cancellation of APPROVED requests', async () => {
+      vi.spyOn(sessionModule, 'getCurrentUser').mockResolvedValue({ id: 'user-1', role: 'EMPLOYEE', name: 'Test' });
+      vi.spyOn(prisma.leaveRequest, 'findUnique').mockResolvedValue({ id: 'req-1', userId: 'user-1', status: 'APPROVED' } as any);
+      vi.spyOn(prisma.leaveRequest, 'updateMany').mockResolvedValue({ count: 0 } as any);
+
+      const result = await leaveActions.cancelLeaveRequest('req-1');
+      expect(result).toEqual({ error: 'Invalid request or cannot be cancelled' });
+    });
   });
 
   describe('approveLeaveRequest', () => {

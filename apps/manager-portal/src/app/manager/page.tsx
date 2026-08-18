@@ -1,12 +1,22 @@
-import { requireManager } from '@leave-app/database/src/lib/authorization';
+import { requireManager, AuthorizationError } from '@leave-app/database/src/lib/authorization';
 import { prisma } from '@/lib/prisma';
 import LogoutButton from '@/components/LogoutButton';
 import ManagerActions from '@/components/ManagerActions';
 import { getLeaveStats } from '@leave-app/database/src/actions/leave';
 import { getEmployeePortalUrl } from '@leave-app/database/src/lib/config';
+import { redirect } from 'next/navigation';
+import type { SessionPayload } from '@leave-app/database/src/lib/session-crypto';
 
 export default async function ManagerDashboard() {
-  const session = await requireManager();
+  let session: SessionPayload;
+  try {
+    session = await requireManager();
+  } catch (error) {
+    if (error instanceof AuthorizationError) {
+      redirect(`${getEmployeePortalUrl()}/employee`);
+    }
+    throw error;
+  }
 
   const stats = await getLeaveStats();
 

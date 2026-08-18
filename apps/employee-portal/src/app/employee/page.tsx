@@ -2,8 +2,8 @@ import { requireAuthenticatedUser } from '@leave-app/database/src/lib/authorizat
 import { prisma } from '@/lib/prisma';
 import LeaveRequestForm from '@/components/LeaveRequestForm';
 import LogoutButton from '@/components/LogoutButton';
-import { cancelLeaveRequest } from '@leave-app/database/src/actions/leave';
 import { getManagerPortalUrl } from '@leave-app/database/src/lib/config';
+import LeaveHistory from '@/components/LeaveHistory';
 
 export default async function EmployeeDashboard() {
   const session = await requireAuthenticatedUser();
@@ -16,6 +16,10 @@ export default async function EmployeeDashboard() {
     where: { userId: session.id },
     orderBy: { createdAt: 'desc' }
   });
+
+  const totalDays = balance?.totalDays || 0;
+  const usedDays = balance?.usedDays || 0;
+  const availableDays = Math.max(0, totalDays - usedDays);
 
   return (
     <div className="container">
@@ -35,52 +39,38 @@ export default async function EmployeeDashboard() {
         </div>
       </nav>
 
-      <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: '1fr 2fr' }}>
-        <div>
-          <div className="glass-panel" style={{ textAlign: 'center' }}>
-            <h3 style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Leave Balance</h3>
-            <div style={{ fontSize: '3rem', fontWeight: 700, color: 'var(--primary)' }}>
-              {balance ? balance.totalDays - balance.usedDays : 0}
-            </div>
-            <div style={{ color: 'var(--text-muted)' }}>Days Available</div>
-            <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-              ({balance?.usedDays || 0} used out of {balance?.totalDays || 0})
+      <div className="dashboard-grid">
+        <div className="dashboard-sidebar">
+          <div className="glass-panel text-center">
+            <h3 style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Leave Balance</h3>
+            
+            <div className="balance-metrics">
+              <div className="metric primary-metric">
+                <div className="metric-value">{availableDays}</div>
+                <div className="metric-label">Available Days</div>
+              </div>
+              
+              <div className="secondary-metrics">
+                <div className="metric">
+                  <div className="metric-value small">{usedDays}</div>
+                  <div className="metric-label">Used</div>
+                </div>
+                <div className="metric">
+                  <div className="metric-value small">{totalDays}</div>
+                  <div className="metric-label">Total</div>
+                </div>
+              </div>
             </div>
           </div>
 
           <LeaveRequestForm />
         </div>
 
-        <div className="glass-panel">
-          <h3 style={{ marginBottom: '1.5rem' }}>Your Requests</h3>
-          {requests.length === 0 ? (
-            <p style={{ color: 'var(--text-muted)' }}>No leave requests found.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {requests.map((req) => (
-                <div key={req.id} style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', borderLeft: `4px solid ${req.status === 'APPROVED' ? 'var(--success)' : req.status === 'REJECTED' ? 'var(--danger)' : req.status === 'CANCELLED' ? '#888' : 'var(--warning)'}` }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', alignItems: 'center' }}>
-                    <div>
-                      <strong style={{ marginRight: '0.5rem' }}>{req.type} LEAVE:</strong>
-                      <strong>{req.startDate.toLocaleDateString()} to {req.endDate.toLocaleDateString()}</strong>
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(255,255,255,0.1)' }}>{req.status}</span>
-                      {req.status === 'PENDING' && (
-                        <form action={async () => {
-                          "use server";
-                          await cancelLeaveRequest(req.id);
-                        }}>
-                          <button type="submit" style={{ fontSize: '0.7rem', padding: '0.3rem 0.6rem', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
-                        </form>
-                      )}
-                    </div>
-                  </div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{req.reason}</div>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="dashboard-main">
+          <div className="glass-panel">
+            <h3 style={{ marginBottom: '1.5rem' }}>Your Requests</h3>
+            <LeaveHistory requests={requests} />
+          </div>
         </div>
       </div>
     </div>

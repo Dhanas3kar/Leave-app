@@ -14,11 +14,14 @@ const createLeaveSchema = z.object({
 });
 
 export async function createLeaveRequest(prevState: any, formData: FormData) {
+  console.log('createLeaveRequest CALLED with formData:', Object.fromEntries(formData));
   try {
     const session = await requireEmployee();
+    console.log('createLeaveRequest SESSION:', session);
 
     const result = createLeaveSchema.safeParse(Object.fromEntries(formData));
     if (!result.success) {
+      console.log('createLeaveRequest ZOD ERROR:', result.error);
       return { error: 'Invalid input data.' };
     }
 
