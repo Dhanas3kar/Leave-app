@@ -1,19 +1,12 @@
-import { getCurrentUser } from '@leave-app/database/src/lib/session';
+import { requireManager } from '@leave-app/database/src/lib/authorization';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
 import LogoutButton from '@/components/LogoutButton';
 import ManagerActions from '@/components/ManagerActions';
 import { getLeaveStats } from '@leave-app/database/src/actions/leave';
+import { getEmployeePortalUrl } from '@leave-app/database/src/lib/config';
 
 export default async function ManagerDashboard() {
-  const session = await getCurrentUser();
-  if (!session) {
-    redirect('/login');
-  }
-
-  if (session.role !== 'MANAGER') {
-    redirect('http://localhost:3000/employee');
-  }
+  const session = await requireManager();
 
   const stats = await getLeaveStats();
 
@@ -35,7 +28,7 @@ export default async function ManagerDashboard() {
         <div className="nav-brand">LeaveSync Manager</div>
         <div className="nav-actions">
           <a 
-            href="http://localhost:3000/employee" 
+            href={`${getEmployeePortalUrl()}/employee`} 
             style={{ background: 'transparent', border: '1px solid var(--primary)', padding: '0.4rem 1rem', borderRadius: '4px', textDecoration: 'none', color: 'var(--primary)', fontSize: '0.9rem' }}
           >
             Employee Portal

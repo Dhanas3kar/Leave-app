@@ -30,7 +30,7 @@ describe('Proxy Middleware', () => {
       nextUrl: {
         pathname: path
       },
-      url: 'http://localhost:3000' + path
+      url: 'http://test.local' + path
     } as unknown as NextRequest;
   };
 

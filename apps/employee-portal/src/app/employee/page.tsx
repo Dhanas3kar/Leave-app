@@ -1,15 +1,12 @@
-import { getCurrentUser } from '@leave-app/database/src/lib/session';
+import { requireAuthenticatedUser } from '@leave-app/database/src/lib/authorization';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
 import LeaveRequestForm from '@/components/LeaveRequestForm';
 import LogoutButton from '@/components/LogoutButton';
 import { cancelLeaveRequest } from '@leave-app/database/src/actions/leave';
+import { getManagerPortalUrl } from '@leave-app/database/src/lib/config';
 
 export default async function EmployeeDashboard() {
-  const session = await getCurrentUser();
-  if (!session) {
-    redirect('/login');
-  }
+  const session = await requireAuthenticatedUser();
 
   const balance = await prisma.leaveBalance.findUnique({
     where: { userId: session.id }
@@ -27,7 +24,7 @@ export default async function EmployeeDashboard() {
         <div className="nav-actions">
           {session.role === 'MANAGER' && (
             <a 
-              href="http://localhost:3001/manager" 
+              href={`${getManagerPortalUrl()}/manager`} 
               style={{ background: 'var(--primary)', padding: '0.4rem 1rem', borderRadius: '4px', textDecoration: 'none', color: 'white', fontSize: '0.9rem' }}
             >
               Manager Portal

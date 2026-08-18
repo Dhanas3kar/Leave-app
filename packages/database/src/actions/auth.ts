@@ -5,12 +5,15 @@ import { setSession, clearSession } from '../lib/session';
 import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { getEmployeePortalUrl, getManagerPortalUrl } from '../lib/config';
 
+// Public registration schema — no role field.
+// All public registrations create EMPLOYEE accounts.
+// Manager promotion is an administrative operation.
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().min(2),
-  role: z.enum(['EMPLOYEE', 'MANAGER']),
 });
 
 const loginSchema = z.object({
@@ -25,7 +28,10 @@ export async function register(prevState: any, formData: FormData) {
     return { error: 'Invalid input. Please check your details.' };
   }
 
-  const { email, password, name, role } = result.data;
+  const { email, password, name } = result.data;
+  // Role is ALWAYS EMPLOYEE for public registration.
+  // Any client-supplied "role" field is silently ignored.
+  const role = 'EMPLOYEE';
 
   const existingUser = await prisma.user.findUnique({ 
     where: { email },
@@ -46,23 +52,17 @@ export async function register(prevState: any, formData: FormData) {
     },
   });
 
-  if (role === 'EMPLOYEE') {
-    await prisma.leaveBalance.create({
-      data: {
-        userId: user.id,
-        totalDays: 20,
-        usedDays: 0,
-      },
-    });
-  }
+  await prisma.leaveBalance.create({
+    data: {
+      userId: user.id,
+      totalDays: 20,
+      usedDays: 0,
+    },
+  });
 
   await setSession({ id: user.id, role: user.role, name: user.name });
   
-  if (user.role === 'MANAGER') {
-    return { redirectUrl: 'http://localhost:3001/manager' };
-  } else {
-    return { redirectUrl: 'http://localhost:3000/employee' };
-  }
+  return { redirectUrl: `${getEmployeePortalUrl()}/employee` };
 }
 
 export async function login(prevState: any, formData: FormData) {
@@ -90,9 +90,9 @@ export async function login(prevState: any, formData: FormData) {
   await setSession({ id: user.id, role: user.role, name: user.name });
   
   if (user.role === 'MANAGER') {
-    return { redirectUrl: 'http://localhost:3001/manager' };
+    return { redirectUrl: `${getManagerPortalUrl()}/manager` };
   } else {
-    return { redirectUrl: 'http://localhost:3000/employee' };
+    return { redirectUrl: `${getEmployeePortalUrl()}/employee` };
   }
 }
 

@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const EMPLOYEE_URL = process.env.NEXT_PUBLIC_EMPLOYEE_PORTAL_URL || 'http://localhost:3000';
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -8,7 +10,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: EMPLOYEE_URL,
     trace: 'on-first-retry',
   },
   projects: [
@@ -17,4 +19,9 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
+  webServer: {
+    command: 'npm run dev',
+    url: EMPLOYEE_URL,
+    reuseExistingServer: !process.env.CI,
+  },
 });
